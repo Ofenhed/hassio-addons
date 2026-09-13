@@ -61,10 +61,11 @@ echo "Setting private key"
 wg set "$wg_interface_name" private-key <(cat <<<"$private_key")
 unset private_key
 
-echo "Adding IPs: ${local_ips[*]}"
+echo "Adding IPs"
 for ip in "${local_ips[@]}"; do
     ip addr add "$ip" dev "$wg_interface_name"
 done
+ip addr show "$wg_interface_name"
 
 echo "Bringing $wg_interface_name up"
 ip link set "$wg_interface_name" up
