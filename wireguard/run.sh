@@ -4,7 +4,7 @@ set -e
 
 private_key=$(bashio::config 'wg_private_key')
 
-if wg_interface_name=$(bashio::config 'wg_interface_name' wg0)
+wg_interface_name=$(bashio::config 'wg_interface_name' wg0)
 
 fwmark=$(wg show "$wg_interface_name" fwmark)
 
