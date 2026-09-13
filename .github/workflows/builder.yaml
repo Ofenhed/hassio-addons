@@ -103,7 +103,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download Rust builder
-        if: ${{ steps.check.outputs.build_arch == 'true' && steps.info.outputs.image == "intouch2-mqtt" }}
+        if: ${{ steps.check.outputs.build_arch == 'true' && steps.info.outputs.image == 'intouch2-mqtt' }}
         run: |
           docker image pull --platform linux/${{ fromJson('{"aarch64": "arm64/v8", "amd64": "amd64", "armv7": "arm/v7", "i386": "386"}')[matrix.arch] }} rust:latest
 
