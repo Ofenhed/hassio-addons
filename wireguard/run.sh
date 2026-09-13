@@ -72,11 +72,11 @@ done
 
 ip route show table "$route_table_id"
 
-wg show
+wg show "$wg_interface_name"
 if [ "$log_status_interval" -eq 0 ]; then
     sleep inf
 fi
 
-while wg show; do
+while wg show "$wg_interface_name"; do
     sleep -- "$log_status_interval"
 done
