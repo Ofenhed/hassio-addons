@@ -35,7 +35,7 @@ ip link "$wg_interface_name" 2>/dev/null || ip link add "$wg_interface_name" typ
 conf_file=$(mktemp)
 
 echo "Saving config file $conf_file"
-bashio::config 'wg_config' > "$conf_file"
+bashio::config 'wg_config' '' > "$conf_file"
 
 echo "Applying config"
 wg setconf "$wg_interface_name" "$conf_file"
