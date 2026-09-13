@@ -13,12 +13,12 @@ while [ $((0+fwmark)) -eq 0 ]; do
     wg set "$wg_interface_name" fwmark "$fwmark"
 done
 
-route_table_id=$(bashio::app.option 'route_table_id' 100)
+route_table_id=$(bashio::config 'route_table_id' 100)
 route_table_id=$((0+route_table_id))
 
-log_status_interval=$(bashio::app.option 'log_status_interval' 0)
+log_status_interval=$(bashio::config 'log_status_interval' 0)
 
-block_non_wireguard=$(bashio::app.option 'block_non_wireguard' false)
+block_non_wireguard=$(bashio::config 'block_non_wireguard' false)
 
 function teardown_wg() {
     set +e
@@ -29,11 +29,11 @@ function teardown_wg() {
 
 trap teardown_wg EXIT
 
-ip link add "$wg_interface_name" type wireguard
+ip link "$wg_interface_name" 2>/dev/null || ip link add "$wg_interface_name" type wireguard
 
 conf_file=$(mktemp)
 
-bashio::app.option 'wg_config' > "$conf_file"
+bashio::config 'wg_config' > "$conf_file"
 
 wg setconf "$wg_interface_name" "$conf_file"
 rm -f "$conf_file"
