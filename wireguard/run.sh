@@ -44,7 +44,7 @@ while [ "$fwmark" == "off" ] || [[ $((0+fwmark)) -eq 0 ]]; do
 done
 
 echo "Adding routing rule"
-ip rule add not fwmark "$fwmark" table "$route_table_id"
+#ip rule add not fwmark "$fwmark" table "$route_table_id"
 ip rule
 if [ $block_non_wireguard = "true" ]; then
     ip route add table "$route_table_id" to blackhole default priority 100
