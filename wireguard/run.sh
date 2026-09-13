@@ -17,6 +17,7 @@ local_ips_raw=$(bashio::config 'ip' '')
 readarray -t local_ips <<<"$local_ips_raw"
 fwmark=""
 
+remove_suppress_prefixlength=0
 function teardown_wg() {
     set +e
     echo "Removing interface"
@@ -27,6 +28,10 @@ function teardown_wg() {
     fi
     echo "Flushing route table"
     ip route flush table "$route_table_id"
+    if [ $remove_suppress_prefixlength -eq 1 ]; then
+        echo "Remove suppress prefix length"
+        ip rule del table main suppress_prefixlength 0
+    fi
 }
 
 trap teardown_wg EXIT
@@ -56,6 +61,8 @@ done
 echo
 echo "Adding routing rule"
 ip rule add not fwmark "$fwmark" table "$route_table_id"
+ip rule add table main suppress_prefixlength 0
+remove_suppress_prefixlength=1
 ip rule
 if [ $block_non_wireguard = "true" ]; then
     ip route add table "$route_table_id" to blackhole default priority 100
