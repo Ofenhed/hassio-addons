@@ -18,8 +18,10 @@ function teardown_wg() {
     set +e
     echo "Removing interface"
     ip link delete "$wg_interface_name"
-    echo "Removing routing rule"
-    ip rule del not fwmark "$fwmark" table "$route_table_id"
+    if [ "$fwmark" != "" ]; then
+        echo "Removing routing rule"
+        ip rule del not fwmark "$fwmark" table "$route_table_id"
+    fi
     echo "Flushing route table"
     ip route flush table "$route_table_id"
 }
