@@ -60,7 +60,7 @@ echo "Bringing $wg_interface_name up"
 ip link set "$wg_interface_name" up
 
 ecoh "Creating routing table $route_table_id"
-for peer_ip in $(wg show "$wg_interface_name" allowed-ips); do
+for peer_ip in $(wg show "$wg_interface_name" allowed-ips | cut -f 2-); do
     ip route add table "$route_table_id" to "$peer_ip" dev "$wg_interface_name" priority 1
 done
 
