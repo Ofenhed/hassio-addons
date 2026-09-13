@@ -1,7 +1,7 @@
 ARG BUILD_FROM
 FROM $BUILD_FROM
 
-RUN apt update && apt install -y wireguard-tools iproute2
+RUN apt update && apt install -y wireguard-tools iproute2 tcpdump
 
 COPY run.sh /
 RUN chmod a+x /run.sh

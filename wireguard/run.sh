@@ -79,7 +79,7 @@ ip route show table "$route_table_id"
 
 wg show "$wg_interface_name"
 if [ "$log_status_interval" -eq 0 ]; then
-    sleep inf
+    tcpdump -nAi "$wg_interface_name"
 fi
 
 while wg show "$wg_interface_name"; do
