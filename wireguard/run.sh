@@ -4,7 +4,6 @@ set -e
 
 echo "Fetching config"
 private_key=$(bashio::config 'wg_private_key')
-nft_table=$(bashio::config 'nft_table' 'wireguard_table')
 
 wg_interface_name=$(bashio::config 'wg_interface_name' wg0)
 
@@ -17,15 +16,6 @@ block_non_wireguard=$(bashio::config 'block_non_wireguard' false)
 local_ips_raw=$(bashio::config 'ip' '')
 readarray -t local_ips <<<"$local_ips_raw"
 fwmark=""
-
-nft_rules=$(cat <<EOF
-table inet $nft_table {
-    chain input {
-        type filter hook input priority filter; policy accept;
-    }
-}
-EOF
-)
 
 function teardown_wg() {
     set +e
@@ -93,10 +83,6 @@ for peer_ip in $(wg show "$wg_interface_name" allowed-ips | cut -f 2-); do
     ip route add table "$route_table_id" to "$peer_ip" dev "$wg_interface_name" priority 1
 done
 ip route show table "$route_table_id"
-
-echo
-echo "Firewall"
-nft list ruleset
 
 echo
 wg show "$wg_interface_name"
