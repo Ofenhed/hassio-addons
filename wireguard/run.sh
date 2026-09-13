@@ -13,6 +13,9 @@ route_table_id=$((0+route_table_id))
 log_status_interval=$(bashio::config 'log_status_interval' 0)
 
 block_non_wireguard=$(bashio::config 'block_non_wireguard' false)
+local_ips=$(bashio::config 'ip')
+echo "Local ips:"
+printf "'%s' " "${local_ips[@]}"
 fwmark=""
 
 function teardown_wg() {
