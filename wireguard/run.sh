@@ -34,8 +34,11 @@ ip link "$wg_interface_name" 2>/dev/null || ip link add "$wg_interface_name" typ
 
 wg set "$wg_interface_name" listen-port 51820
 
-echo "Applying config"
-wg setconf "$wg_interface_name" <(bashio::config 'wg_config')
+echo "Applying config:"
+wg_config=$(bashio::config 'wg_config')
+echo "$wg_config"
+wg setconf "$wg_interface_name" <(cat <<<"$wg_config")
+wg show "$wg_interface_name"
 
 echo "Finding fwmark"
 fwmark=$(wg show "$wg_interface_name" fwmark)
