@@ -32,6 +32,8 @@ trap teardown_wg EXIT
 echo "Creating interface $wg_interface_name"
 ip link "$wg_interface_name" 2>/dev/null || ip link add "$wg_interface_name" type wireguard
 
+wg set "$wg_interface_name" listen-port 51820
+
 echo "Applying config"
 wg setconf "$wg_interface_name" <(bashio::config 'wg_config')
 
@@ -53,7 +55,7 @@ fi
 echo "Setting private key"
 wg set "$wg_interface_name" private-key <(cat <<<"$private_key")
 unset private_key
-echo "Public key is $(wg get "$wg_interface_name" public-key)"
+echo "Public key is $(wg show "$wg_interface_name" public-key)"
 
 echo "Bringing $wg_interface_name up"
 ip link set "$wg_interface_name" up
