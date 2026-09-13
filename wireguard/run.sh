@@ -38,7 +38,7 @@ wg setconf "$wg_interface_name" <(bashio::config 'wg_config')
 echo "Finding fwmark"
 fwmark=$(wg show "$wg_interface_name" fwmark)
 
-while [ $((0+fwmark)) -eq 0 ]; do
+while [ "$fwmark" == "off" ] || [[ $((0+fwmark)) -eq 0 ]]; do
     fwmark="$RANDOM"
     wg set "$wg_interface_name" fwmark "$fwmark" && break
 done
