@@ -13,7 +13,8 @@ route_table_id=$((0+route_table_id))
 log_status_interval=$(bashio::config 'log_status_interval' 0)
 
 block_non_wireguard=$(bashio::config 'block_non_wireguard' false)
-bashio::config 'ip' '' | readarray -t local_ips
+local_ips_raw=$(bashio::config 'ip' '')
+readarray -t local_ips <<<"$local_ips_raw"
 echo "Local ips:"
 printf "'%s' " "${local_ips[@]}"
 fwmark=""
