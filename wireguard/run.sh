@@ -32,18 +32,8 @@ trap teardown_wg EXIT
 echo "Creating interface $wg_interface_name"
 ip link "$wg_interface_name" 2>/dev/null || ip link add "$wg_interface_name" type wireguard
 
-conf_file=$(mktemp)
-
 echo "Applying config"
 wg setconf "$wg_interface_name" <(bashio::config 'wg_config')
-rm -f "$conf_file"
-
-echo "Adding routing rule"
-ip rule add not fwmark "$fwmark" table "$route_table_id"
-ip rule
-if [ $block_non_wireguard = "true" ]; then
-    ip route add table "$route_table_id" to blackhole default priority 100
-fi
 
 echo "Finding fwmark"
 fwmark=$(wg show "$wg_interface_name" fwmark)
@@ -52,6 +42,13 @@ while [ $((0+fwmark)) -eq 0 ]; do
     fwmark="$RANDOM"
     wg set "$wg_interface_name" fwmark "$fwmark" && break
 done
+
+echo "Adding routing rule"
+ip rule add not fwmark "$fwmark" table "$route_table_id"
+ip rule
+if [ $block_non_wireguard = "true" ]; then
+    ip route add table "$route_table_id" to blackhole default priority 100
+fi
 
 echo "Setting private key"
 wg set "$wg_interface_name" private-key <(cat <<<"$private_key")
