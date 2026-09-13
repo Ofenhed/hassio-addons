@@ -2,16 +2,10 @@
 
 set -e
 
+echo "Fetching config"
 private_key=$(bashio::config 'wg_private_key')
 
 wg_interface_name=$(bashio::config 'wg_interface_name' wg0)
-
-fwmark=$(wg show "$wg_interface_name" fwmark)
-
-while [ $((0+fwmark)) -eq 0 ]; do
-    fwmark="$RANDOM"
-    wg set "$wg_interface_name" fwmark "$fwmark"
-done
 
 route_table_id=$(bashio::config 'route_table_id' 100)
 route_table_id=$((0+route_table_id))
@@ -49,6 +43,14 @@ ip rule
 if [ $block_non_wireguard = "true" ]; then
     ip route add table "$route_table_id" to blackhole default priority 100
 fi
+
+echo "Finding fwmark"
+fwmark=$(wg show "$wg_interface_name" fwmark)
+
+while [ $((0+fwmark)) -eq 0 ]; do
+    fwmark="$RANDOM"
+    wg set "$wg_interface_name" fwmark "$fwmark" && break
+done
 
 echo "Setting private key"
 wg set "$wg_interface_name" private-key <(cat <<<"$private_key")
