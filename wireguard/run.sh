@@ -4,6 +4,7 @@ set -e
 
 echo "Fetching config"
 private_key=$(bashio::config 'wg_private_key')
+nft_table=$(bashio::config 'nft_table' 'wireguard_table')
 
 wg_interface_name=$(bashio::config 'wg_interface_name' wg0)
 
@@ -16,6 +17,15 @@ block_non_wireguard=$(bashio::config 'block_non_wireguard' false)
 local_ips_raw=$(bashio::config 'ip' '')
 readarray -t local_ips <<<"$local_ips_raw"
 fwmark=""
+
+nft_rules=$(cat <<EOF
+table inet $nft_table {
+    chain input {
+        type filter hook input priority filter; policy accept;
+    }
+}
+EOF
+)
 
 function teardown_wg() {
     set +e
@@ -31,17 +41,20 @@ function teardown_wg() {
 
 trap teardown_wg EXIT
 
+echo
 echo "Creating interface $wg_interface_name"
 ip link "$wg_interface_name" 2>/dev/null || ip link add "$wg_interface_name" type wireguard
 
 wg set "$wg_interface_name" listen-port 51820
 
+echo
 echo "Applying config:"
 wg_config=$(bashio::config 'wg_config')
 echo "$wg_config"
 wg setconf "$wg_interface_name" <(cat <<<"$wg_config")
 wg show "$wg_interface_name"
 
+echo
 echo "Finding fwmark"
 fwmark=$(wg show "$wg_interface_name" fwmark)
 
@@ -50,6 +63,7 @@ while [ "$fwmark" == "off" ] || [[ $((0+fwmark)) -eq 0 ]]; do
     wg set "$wg_interface_name" fwmark "$fwmark" && break
 done
 
+echo
 echo "Adding routing rule"
 ip rule add not fwmark "$fwmark" table "$route_table_id"
 ip rule
@@ -57,26 +71,34 @@ if [ $block_non_wireguard = "true" ]; then
     ip route add table "$route_table_id" to blackhole default priority 100
 fi
 
+echo
 echo "Setting private key"
 wg set "$wg_interface_name" private-key <(cat <<<"$private_key")
 unset private_key
 
+echo
 echo "Adding IPs"
 for ip in "${local_ips[@]}"; do
     ip addr add "$ip" dev "$wg_interface_name"
 done
 ip addr show "$wg_interface_name"
 
+echo
 echo "Bringing $wg_interface_name up"
 ip link set "$wg_interface_name" up
 
+echo
 echo "Creating routing table $route_table_id"
 for peer_ip in $(wg show "$wg_interface_name" allowed-ips | cut -f 2-); do
     ip route add table "$route_table_id" to "$peer_ip" dev "$wg_interface_name" priority 1
 done
-
 ip route show table "$route_table_id"
 
+echo
+echo "Firewall"
+nft list ruleset
+
+echo
 wg show "$wg_interface_name"
 if [ "$log_status_interval" -eq 0 ]; then
     sleep inf
