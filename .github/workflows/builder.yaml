@@ -121,7 +121,7 @@ jobs:
             ${{ env.BUILD_ARGS }} \
             --${{ matrix.arch }} \
             --target /data/${{ matrix.addon }} \
-            --image "hassio-addon-${{ steps.check.outputs.image }}" \
+            --image "${{ steps.check.outputs.image }}" \
             --cache-tag "${{ matrix.addon }}/${{ matrix.arch }}" \
             --docker-hub "ghcr.io/${{ github.repository_owner }}" \
             --addon
