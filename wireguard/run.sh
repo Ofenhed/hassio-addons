@@ -13,6 +13,7 @@ route_table_id=$((0+route_table_id))
 log_status_interval=$(bashio::config 'log_status_interval' 0)
 
 block_non_wireguard=$(bashio::config 'block_non_wireguard' false)
+fwmark=""
 
 function teardown_wg() {
     set +e
@@ -33,6 +34,7 @@ ip link "$wg_interface_name" 2>/dev/null || ip link add "$wg_interface_name" typ
 
 conf_file=$(mktemp)
 
+echo "Saving config file $conf_file"
 bashio::config 'wg_config' > "$conf_file"
 
 echo "Applying config"

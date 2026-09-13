@@ -1,7 +1,7 @@
 name: "Wireguard"
 description: "Wireguard access and firewall ruling for Home Assistant"
 image: ghcr.io/ofenhed/hassio-addon-{arch}-wireguard
-version: "0.1.7"
+version: "0.1.8"
 slug: "privileged-wireguard"
 init: false
 tmpfs: true
