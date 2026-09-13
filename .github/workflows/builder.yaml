@@ -11,6 +11,7 @@ on:
   pull_request:
     branches:
       - master
+  workflow_dispatch:
 
 jobs:
   init:
@@ -35,10 +36,14 @@ jobs:
 
       - name: Get changed add-ons
         id: changed_addons
+        env:
+          addons: ${{ steps.addons.outputs.addons }}
+          changed_files: ${{ steps.changed_files.outputs.all }}
+          build_all: ${{ case(github.event_name == 'workflow_dispatch', '1', '0') }}
         run: |
           declare -a changed_addons
-          for addon in ${{ steps.addons.outputs.addons }}; do
-            if [[ "${{ steps.changed_files.outputs.all }}" =~ $addon ]]; then
+          for addon in $addons; do
+            if [ $build_all -eq 1 ] || [[ "$changed_files" =~ $addon ]]; then
               changed_addons+=("\"${addon}\",");
             fi
           done
@@ -103,7 +108,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download Rust builder
-        if: ${{ steps.check.outputs.build_arch == 'true' && steps.info.outputs.image == 'intouch2-mqtt' }}
+        if: ${{ steps.check.outputs.build_arch == 'true' && matrix.addon == 'intouch2-mqtt' }}
         run: |
           docker image pull --platform linux/${{ fromJson('{"aarch64": "arm64/v8", "amd64": "amd64", "armv7": "arm/v7", "i386": "386"}')[matrix.arch] }} rust:latest
 
