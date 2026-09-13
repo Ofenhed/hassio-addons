@@ -15,8 +15,6 @@ log_status_interval=$(bashio::config 'log_status_interval' 0)
 block_non_wireguard=$(bashio::config 'block_non_wireguard' false)
 local_ips_raw=$(bashio::config 'ip' '')
 readarray -t local_ips <<<"$local_ips_raw"
-echo "Local ips:"
-printf "'%s' " "${local_ips[@]}"
 fwmark=""
 
 function teardown_wg() {
@@ -62,6 +60,11 @@ fi
 echo "Setting private key"
 wg set "$wg_interface_name" private-key <(cat <<<"$private_key")
 unset private_key
+
+echo "Adding IPs: ${local_ips[*]}"
+for ip in "${local_ips[@]}"; do
+    ip addr add "$ip" dev "$wg_interface_name"
+done
 
 echo "Bringing $wg_interface_name up"
 ip link set "$wg_interface_name" up
