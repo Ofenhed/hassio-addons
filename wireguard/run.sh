@@ -59,6 +59,7 @@ unset private_key
 echo "Bringing $wg_interface_name up"
 ip link set "$wg_interface_name" up
 
+ecoh "Creating routing table $route_table_id"
 for peer_ip in $(wg show "$wg_interface_name" allowed-ips); do
     ip route add table "$route_table_id" to "$peer_ip" dev "$wg_interface_name" priority 1
 done
