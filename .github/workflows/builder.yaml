@@ -99,6 +99,7 @@ jobs:
             echo "build_arch=false" >> "$GITHUB_OUTPUT"
           elif [[ "${{ steps.info.outputs.architectures }}" =~ ${{ matrix.arch }} ]]; then
             echo "build_arch=true" >> "$GITHUB_OUTPUT"
+            echo "image=$(echo ${{ steps.info.outputs.image }})" >> "$GITHUB_OUTPUT"
             echo "image_name=$(echo ${{ steps.info.outputs.image }} | cut -d'/' -f3)" >> "$GITHUB_OUTPUT"
             echo "image_registry_prefix=$(echo ${{ steps.info.outputs.image }} | cut -d'/' -f2,3)" >> "$GITHUB_OUTPUT"
             if [[ -z "${{ github.head_ref }}" ]] && [[ "${{ github.event_name }}" == "push" ]]; then
@@ -129,7 +130,7 @@ jobs:
           image-tags: |
             latest
           container-registry-password: ${{ secrets.GITHUB_TOKEN }}
-          image: ${{ steps.info.outputs.image }}
+          image: ${{ steps.check.outputs.image }}
           context: ./${{ matrix.addon }}
           cache-gha-scope: ${{ matrix.addon }}
           cosign: false
