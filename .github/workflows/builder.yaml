@@ -166,5 +166,5 @@ jobs:
           image-name: ${{ steps.prep.outputs.image_name }}
           registry-prefix: ${{ steps.prep.outputs.image_registry_prefix }}
           image-tags: |
-            ${{ fromJson(needs.build.outputs.version) }}
+            ${{ fromJson(steps.info.outputs.version) }}
             latest
