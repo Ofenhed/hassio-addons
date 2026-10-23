@@ -74,7 +74,6 @@ jobs:
       packages: write
     outputs:
       version: ${{ steps.info.outputs.version }}
-      image_name: ${{ steps.check.outputs.image_name }}
       image_registry_prefix: ${{ steps.check.outputs.image_registry_prefix }}
 
     steps:
@@ -150,14 +149,30 @@ jobs:
     permissions:
       packages: write
     steps:
+      - name: Get information
+        id: info
+        uses: home-assistant/actions/helpers/info@master
+        with:
+          path: "./${{ matrix.addon }}"
+
+      - name: Prepare information
+        id: prep
+        env:
+          image: ${{ step.info.outputs.image }}
+        run: |
+          image_name=$(echo "$image" | cut -d'/' -f3)
+          image_registry_prefix=$(echo $image | cut -d'/' -f1,2)
+          echo "image_name=$image_name" >> "$GITHUB_OUTPUT"
+          echo "image_registry_prefix=$image_registry_prefix" >> "$GITHUB_OUTPUT"
+
       - name: Publish multi-arch manifest for ${{ matrix.addon }}
         uses: home-assistant/builder/actions/publish-multi-arch-manifest@2026.09.0
         with:
           architectures: ${{ needs.init.outputs.arches }}
           container-registry-password: ${{ secrets.GITHUB_TOKEN }}
           cosign: false
-          image-name: ${{ needs.build.outputs.image_name }}
-          registry-prefix: ${{ needs.build.outputs.image_registry_prefix }}
+          image-name: ${{ step.prep.outputs.image_name }}
+          registry-prefix: ${{ step.prep.outputs.image_registry_prefix }}
           image-tags: |
             ${{ fromJson(needs.build.outputs.version) }}
             latest
