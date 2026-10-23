@@ -1,4 +1,4 @@
-ARG BUILD_FROM
+ARG BUILD_FROM=ghcr.io/home-assistant/base-ubuntu:latest
 FROM $BUILD_FROM
 
 RUN apt update && apt install -y wireguard-tools iproute2
