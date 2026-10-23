@@ -76,7 +76,8 @@ jobs:
       contents: read
       packages: write
     outputs:
-      image_name: ${{ steps.check.outputs.image }}
+      image_name: ${{ steps.check.outputs.image_name }}
+      image_registry_prefix: ${{ steps.check.outputs.image_registry_prefix }}
 
     steps:
       - name: Check out repository
@@ -98,7 +99,8 @@ jobs:
             echo "build_arch=false" >> "$GITHUB_OUTPUT"
           elif [[ "${{ steps.info.outputs.architectures }}" =~ ${{ matrix.arch }} ]]; then
             echo "build_arch=true" >> "$GITHUB_OUTPUT"
-            echo "image=$(echo ${{ steps.info.outputs.image }} | cut -d'/' -f3)" >> "$GITHUB_OUTPUT"
+            echo "image_name=$(echo ${{ steps.info.outputs.image }} | cut -d'/' -f3)" >> "$GITHUB_OUTPUT"
+            echo "image_registry_prefix=$(echo ${{ steps.info.outputs.image }} | cut -d'/' -f2,3)" >> "$GITHUB_OUTPUT"
             if [[ -z "${{ github.head_ref }}" ]] && [[ "${{ github.event_name }}" == "push" ]]; then
                 echo "push_image=true" >> "$GITHUB_OUTPUT"
             fi
@@ -127,7 +129,7 @@ jobs:
           image-tags: |
             latest
           container-registry-password: ${{ secrets.GITHUB_TOKEN }}
-          image: ${{ steps.check.outputs.image }}
+          image: ${{ steps.info.outputs.image }}
           context: ./${{ matrix.addon }}
           cache-gha-scope: ${{ matrix.addon }}
           cosign: false
@@ -149,5 +151,6 @@ jobs:
           architectures: ${{ needs.init.outputs.arches }}
           container-registry-password: ${{ secrets.GITHUB_TOKEN }}
           image-name: ${{ needs.build.outputs.image_name }}
+          registry-prefix: ${{ needs.build.outputs.image_registry_prefix }}
           image-tags: |
             latest
