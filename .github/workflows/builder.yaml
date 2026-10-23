@@ -129,7 +129,7 @@ jobs:
           image-tags: |
             latest
           container-registry-password: ${{ secrets.GITHUB_TOKEN }}
-          image: ${{ steps.check.outputs.image_name }}
+          image: ${{ steps.info.outputs.image }}
           context: ./${{ matrix.addon }}
           cache-gha-scope: ${{ matrix.addon }}
           cosign: false
