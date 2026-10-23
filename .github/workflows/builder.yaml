@@ -128,6 +128,7 @@ jobs:
           version: ${{ fromJson(steps.info.outputs.version) }}
           image-tags: |
             latest
+            ${{ fromJson(steps.info.outputs.version) }}
           container-registry-password: ${{ secrets.GITHUB_TOKEN }}
           image: ${{ fromJson(steps.info.outputs.image) }}
           context: ./${{ matrix.addon }}
