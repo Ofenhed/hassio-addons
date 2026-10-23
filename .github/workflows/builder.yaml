@@ -34,7 +34,7 @@ jobs:
 
       - name: Enumerate arches
         id: arches
-        run: echo 'arches=["aarch64", "amd64", "armv7"]' >> "$GITHUB_OUTPUT"
+        run: echo 'arches=["aarch64", "amd64"]' >> "$GITHUB_OUTPUT"
 
       - name: Get changed add-ons
         id: changed_addons
@@ -173,6 +173,7 @@ jobs:
           cosign: false
           image-name: ${{ steps.prep.outputs.image_name }}
           registry-prefix: ${{ steps.prep.outputs.image_registry_prefix }}
+          skip-existing: ${{ fromJson(steps.info.outputs.version) }}
           image-tags: |
             ${{ fromJson(steps.info.outputs.version) }}
             latest
