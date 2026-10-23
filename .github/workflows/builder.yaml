@@ -125,8 +125,8 @@ jobs:
           push: ${{ steps.check.outputs.push_image == 'true' }}
           version: ${{ fromJson(steps.info.outputs.version) }}
           image-tags: |
-            latest
             ${{ fromJson(steps.info.outputs.version) }}
+            latest
           container-registry-password: ${{ secrets.GITHUB_TOKEN }}
           image: ${{ steps.check.outputs.arched_image }}
           context: ./${{ matrix.addon }}
