@@ -115,14 +115,6 @@ jobs:
         env:
           dockerfile: ./${{ matrix.addon }}/Dockerfile
 
-      - name: Login to GitHub Container Registry
-        if: ${{ steps.check.outputs.push_image == 'true' }}
-        uses: docker/login-action@v3.6.0
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Caching build step
         if: ${{ steps.docker.outputs.builder != '' }}
         uses: home-assistant/builder/actions/build-image@2026.09.0
@@ -138,7 +130,7 @@ jobs:
           container-registry-password: ${{ secrets.GITHUB_TOKEN }}
           image: ${{ steps.check.outputs.image }}
           context: ./${{ matrix.addon }}
-          cache-gha-scope: ${{ matrix.addon }}
+          cache-gha-scope: ${{ matrix.addon }}-builder
           cache-image-tag: latest-build
           cosign: false
 
@@ -154,7 +146,7 @@ jobs:
           container-registry-password: ${{ secrets.GITHUB_TOKEN }}
           image: ${{ steps.check.outputs.image }}
           context: ./${{ matrix.addon }}
-          cache-gha: false
+          cache-gha-scope: ${{ matrix.addon }}
           cosign: false
 
   manifest:
