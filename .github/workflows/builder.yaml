@@ -124,7 +124,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Caching build step
-        if: ${{ steps.docker.outputs.builder != "" }}
+        if: ${{ steps.docker.outputs.builder != '' }}
         run: |
           docker image pull --platform linux/${{ fromJson('{"aarch64": "arm64/v8", "amd64": "amd64", "armv7": "arm/v7", "i386": "386"}')[matrix.arch] }} rust:latest
         uses: home-assistant/builder/actions/build-image@2026.09.0
