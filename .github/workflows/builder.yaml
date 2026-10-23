@@ -71,7 +71,7 @@ jobs:
       fail-fast: false
       matrix:
         addon: ${{ fromJson(needs.init.outputs.changed_addons) }}
-        arch: ${{ fromJson(needs.init.outputs.arches }}
+        arch: ${{ fromJson(needs.init.outputs.arches) }}
     permissions:
       contents: read
       packages: write
