@@ -105,7 +105,7 @@ jobs:
             echo "image_name=$image_name" >> "$GITHUB_OUTPUT"
             echo "image_registry_prefix=$image_registry_prefix" >> "$GITHUB_OUTPUT"
             echo "arched_image=$image_registry_prefix/${{ matrix.arch }}-$image_name" >> "$GITHUB_OUTPUT"
-            if [[ -z "${{ github.head_ref }}" ]] && [[ "${{ github.event_name }}" == "push" ]]; then
+            if [[ -z "${{ github.head_ref }}" ]] && [[ "${{ github.ref_name }}" == "master" ]]; then
                 echo "push_image=true" >> "$GITHUB_OUTPUT"
             fi
           else
