@@ -177,4 +177,3 @@ jobs:
           skip-existing: ${{ fromJson(steps.info.outputs.version) }}
           image-tags: |
             ${{ fromJson(steps.info.outputs.version) }}
-            latest
