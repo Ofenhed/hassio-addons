@@ -127,10 +127,11 @@ jobs:
           image-tags: |
             ${{ fromJson(steps.info.outputs.version) }}
             latest
+          skip-existing: ${{ fromJson(steps.info.outputs.version) }}
           container-registry-password: ${{ secrets.GITHUB_TOKEN }}
           image: ${{ steps.check.outputs.arched_image }}
           context: ./${{ matrix.addon }}
-          cache-gha-scope: ${{ matrix.addon }}
+          cache-gha-scope: ${{ matrix.arch }}-${{ matrix.addon }}
           cosign: false
 
   manifest:
