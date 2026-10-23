@@ -131,7 +131,7 @@ jobs:
             ${{ fromJson(steps.info.outputs.version) }}
             latest
           container-registry-password: ${{ secrets.GITHUB_TOKEN }}
-          image: ${{ fromJson(steps.info.outputs.image) }}
+          image: ${{ matrix.arch }}-${{ fromJson(steps.info.outputs.image) }}
           context: ./${{ matrix.addon }}
           cache-gha-scope: ${{ matrix.addon }}
           cosign: false
