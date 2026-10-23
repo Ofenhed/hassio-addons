@@ -100,8 +100,11 @@ jobs:
             echo "build_arch=false" >> "$GITHUB_OUTPUT"
           elif [[ "$architectures" =~ ${{ matrix.arch }} ]]; then
             echo "build_arch=true" >> "$GITHUB_OUTPUT"
-            echo "image_name=$(echo "$image" | cut -d'/' -f3)" >> "$GITHUB_OUTPUT"
-            echo "image_registry_prefix=$(echo $image | cut -d'/' -f1,2)" >> "$GITHUB_OUTPUT"
+            image_name=$(echo "$image" | cut -d'/' -f3)
+            image_registry_prefix=$(echo $image | cut -d'/' -f1,2)
+            echo "image_name=$image_name" >> "$GITHUB_OUTPUT"
+            echo "image_registry_prefix=image_registry_prefix" >> "$GITHUB_OUTPUT"
+            echo "arched_image=$image_registry_prefix/${{ matrix.arch }}-$image_name" >> "$GITHUB_OUTPUT"
             if [[ -z "${{ github.head_ref }}" ]] && [[ "${{ github.event_name }}" == "push" ]]; then
                 echo "push_image=true" >> "$GITHUB_OUTPUT"
             fi
@@ -131,7 +134,7 @@ jobs:
             ${{ fromJson(steps.info.outputs.version) }}
             latest
           container-registry-password: ${{ secrets.GITHUB_TOKEN }}
-          image: ${{ matrix.arch }}-${{ fromJson(steps.info.outputs.image) }}
+          image: ${{ steps.check.outputs.arched_image) }}
           context: ./${{ matrix.addon }}
           cache-gha-scope: ${{ matrix.addon }}
           cosign: false
