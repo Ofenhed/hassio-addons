@@ -95,6 +95,9 @@ jobs:
             echo "Image property is not defined, skipping build"
             echo "build_arch=false" >> "$GITHUB_OUTPUT"
           elif [[ "$architectures" =~ ${{ matrix.arch }} ]]; then
+            image_name=$(echo "$image" | cut -d'/' -f3)
+            image_registry_prefix=$(echo $image | cut -d'/' -f1,2)
+            echo "arched_image=$image_registry_prefix/${{ matrix.arch }}-$image_name" >> "$GITHUB_OUTPUT"
             echo "build_arch=true" >> "$GITHUB_OUTPUT"
             if [[ -z "${{ github.head_ref }}" ]] && [[ "${{ github.ref_name }}" == "master" ]]; then
                 echo "push_image=true" >> "$GITHUB_OUTPUT"
@@ -125,7 +128,7 @@ jobs:
             ${{ fromJson(steps.info.outputs.version) }}
             latest
           container-registry-password: ${{ secrets.GITHUB_TOKEN }}
-          image: ${{ fromJson(steps.info.outputs.image) }}
+          image: ${{ steps.check.outputs.arched_image }}
           context: ./${{ matrix.addon }}
           cache-gha-scope: ${{ matrix.addon }}
           cosign: false
