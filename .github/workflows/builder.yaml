@@ -113,7 +113,7 @@ jobs:
             echo "builder=:$builder" >> "$GITHUB_OUTPUT"
           fi
         env:
-          dockerfile: /data/${{ matrix.addon }}/Dockerfile
+          dockerfile: ./${{ matrix.addon }}/Dockerfile
 
       - name: Login to GitHub Container Registry
         if: ${{ steps.check.outputs.push_image == 'true' }}
