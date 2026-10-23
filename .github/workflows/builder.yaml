@@ -141,6 +141,11 @@ jobs:
     permissions:
       packages: write
     steps:
+      - name: Check out repository
+        uses: actions/checkout@v5.0.0
+        with:
+          submodules: recursive
+
       - name: Get information
         id: info
         uses: home-assistant/actions/helpers/info@master
