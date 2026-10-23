@@ -150,6 +150,7 @@ jobs:
         with:
           architectures: ${{ needs.init.outputs.arches }}
           container-registry-password: ${{ secrets.GITHUB_TOKEN }}
+          cosign: false
           image-name: ${{ needs.build.outputs.image_name }}
           registry-prefix: ${{ needs.build.outputs.image_registry_prefix }}
           image-tags: |
