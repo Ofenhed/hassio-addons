@@ -73,6 +73,7 @@ jobs:
       contents: read
       packages: write
     outputs:
+      version: ${{ steps.info.outputs.version }}
       image_name: ${{ steps.check.outputs.image_name }}
       image_registry_prefix: ${{ steps.check.outputs.image_registry_prefix }}
 
@@ -156,3 +157,4 @@ jobs:
           registry-prefix: ${{ needs.build.outputs.image_registry_prefix }}
           image-tags: |
             latest
+            ${{ fromJson(needs.build.outputs.version) }}
