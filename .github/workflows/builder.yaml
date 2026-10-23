@@ -103,7 +103,7 @@ jobs:
             image_name=$(echo "$image" | cut -d'/' -f3)
             image_registry_prefix=$(echo $image | cut -d'/' -f1,2)
             echo "image_name=$image_name" >> "$GITHUB_OUTPUT"
-            echo "image_registry_prefix=image_registry_prefix" >> "$GITHUB_OUTPUT"
+            echo "image_registry_prefix=$image_registry_prefix" >> "$GITHUB_OUTPUT"
             echo "arched_image=$image_registry_prefix/${{ matrix.arch }}-$image_name" >> "$GITHUB_OUTPUT"
             if [[ -z "${{ github.head_ref }}" ]] && [[ "${{ github.event_name }}" == "push" ]]; then
                 echo "push_image=true" >> "$GITHUB_OUTPUT"
