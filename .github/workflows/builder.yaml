@@ -110,7 +110,7 @@ jobs:
         run: |
           builder=$(awk '$1 == "FROM" && $3 == "AS" { print $4; exit }' < "$dockerfile")
           if [ "$builder" != "" ]; then
-            echo "builder=:$builder" >> "$GITHUB_OUTPUT"
+            echo "builder=$builder" >> "$GITHUB_OUTPUT"
           fi
         env:
           dockerfile: ./${{ matrix.addon }}/Dockerfile
@@ -123,10 +123,23 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Download Rust builder
-        if: ${{ steps.check.outputs.build_arch == 'true' && matrix.addon == 'intouch2-mqtt' }}
+      - name: Caching build step
+        if: ${{ steps.docker.outputs.builder != "" }}
         run: |
           docker image pull --platform linux/${{ fromJson('{"aarch64": "arm64/v8", "amd64": "amd64", "armv7": "arm/v7", "i386": "386"}')[matrix.arch] }} rust:latest
+        uses: home-assistant/builder/actions/build-image@2026.09.0
+        with:
+          build-args: |
+            target=${{ steps.docker.outputs.builder }}
+          arch: ${{ matrix.arch }}
+          push: false
+          load: true
+          version: ${{ steps.info.outputs.version }}
+          image-tags: |
+            latest-build
+          container-registry-password: ${{ secrets.GITHUB_TOKEN }}
+          image: ${{ steps.check.outputs.image }}
+          cache-gha-scope: ${{ matrix.addon }}
 
       - name: Build ${{ matrix.addon }} add-on
         if: steps.check.outputs.build_arch == 'true'
@@ -139,8 +152,7 @@ jobs:
             latest
           container-registry-password: ${{ secrets.GITHUB_TOKEN }}
           image: ${{ steps.check.outputs.image }}
-          cache-gha-scope: ${{ matrix.addon }}-${{ matrix.arch }}
-          cache-image-tag: latest${{ steps.docker.outputs.builder }}
+          cache-gha: false
 
   manifest:
     needs: [init, build]
