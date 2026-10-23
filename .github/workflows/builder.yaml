@@ -158,7 +158,7 @@ jobs:
       - name: Prepare information
         id: prep
         env:
-          image: ${{ step.info.outputs.image }}
+          image: ${{ steps.info.outputs.image }}
         run: |
           image_name=$(echo "$image" | cut -d'/' -f3)
           image_registry_prefix=$(echo $image | cut -d'/' -f1,2)
@@ -171,8 +171,8 @@ jobs:
           architectures: ${{ needs.init.outputs.arches }}
           container-registry-password: ${{ secrets.GITHUB_TOKEN }}
           cosign: false
-          image-name: ${{ step.prep.outputs.image_name }}
-          registry-prefix: ${{ step.prep.outputs.image_registry_prefix }}
+          image-name: ${{ steps.prep.outputs.image_name }}
+          registry-prefix: ${{ steps.prep.outputs.image_registry_prefix }}
           image-tags: |
             ${{ fromJson(needs.build.outputs.version) }}
             latest
