@@ -155,7 +155,7 @@ jobs:
       - name: Prepare information
         id: prep
         env:
-          image: ${{ steps.info.outputs.image }}
+          image: ${{ fromJson(steps.info.outputs.image) }}
         run: |
           image_name=$(echo "$image" | cut -d'/' -f3)
           image_registry_prefix=$(echo $image | cut -d'/' -f1,2)
