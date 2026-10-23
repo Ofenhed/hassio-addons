@@ -128,8 +128,8 @@ jobs:
           push: ${{ steps.check.outputs.push_image == 'true' }}
           version: ${{ fromJson(steps.info.outputs.version) }}
           image-tags: |
-            latest
             ${{ fromJson(steps.info.outputs.version) }}
+            latest
           container-registry-password: ${{ secrets.GITHUB_TOKEN }}
           image: ${{ fromJson(steps.info.outputs.image) }}
           context: ./${{ matrix.addon }}
@@ -156,5 +156,5 @@ jobs:
           image-name: ${{ needs.build.outputs.image_name }}
           registry-prefix: ${{ needs.build.outputs.image_registry_prefix }}
           image-tags: |
-            latest
             ${{ fromJson(needs.build.outputs.version) }}
+            latest
