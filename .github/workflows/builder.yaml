@@ -108,7 +108,7 @@ jobs:
       - name: Check for build stages
         id: docker
         run: |
-          builder=$(awk '$1 == "FROM" && $3 == "AS" { last_builder=$4 } END { print last_builder }' < "$dockerfile" | )
+          builder=$(awk '$1 == "FROM" && $3 == "AS" { last_builder=$4 } END { print last_builder }' < "$dockerfile")
           if [ "$builder" != "" ]; then
             echo "builder=$builder" >> "$GITHUB_OUTPUT"
           fi
