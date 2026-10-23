@@ -137,6 +137,7 @@ jobs:
             latest-build
           container-registry-password: ${{ secrets.GITHUB_TOKEN }}
           image: ${{ steps.check.outputs.image }}
+          context: ./${{ matrix.addon }}
           cache-gha-scope: ${{ matrix.addon }}
           cache-image-tag: latest-build
           cosign: false
@@ -152,6 +153,7 @@ jobs:
             latest
           container-registry-password: ${{ secrets.GITHUB_TOKEN }}
           image: ${{ steps.check.outputs.image }}
+          context: ./${{ matrix.addon }}
           cache-gha: false
           cosign: false
 
