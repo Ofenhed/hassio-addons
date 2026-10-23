@@ -139,6 +139,7 @@ jobs:
           image: ${{ steps.check.outputs.image }}
           cache-gha-scope: ${{ matrix.addon }}
           cache-image-tag: latest-build
+          cosign: false
 
       - name: Build ${{ matrix.addon }} add-on
         if: steps.check.outputs.build_arch == 'true'
@@ -152,6 +153,7 @@ jobs:
           container-registry-password: ${{ secrets.GITHUB_TOKEN }}
           image: ${{ steps.check.outputs.image }}
           cache-gha: false
+          cosign: false
 
   manifest:
     needs: [init, build]
