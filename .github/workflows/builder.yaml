@@ -1,8 +1,5 @@
 name: Builder
 
-env:
-  MONITORED_FILES: "build.yaml config.yaml Dockerfile rootfs"
-
 on:
   push:
     branches:
@@ -60,7 +57,7 @@ jobs:
             echo "changed=true" >> "$GITHUB_OUTPUT"
             echo "addons=[$changed]" >> "$GITHUB_OUTPUT"
           else
-            echo "No add-on had any monitored files changed (${{ env.MONITORED_FILES }})";
+            echo "No add-on had any monitored files changed";
           fi
   build:
     needs: init
@@ -93,14 +90,17 @@ jobs:
 
       - name: Check if add-on should be built
         id: check
+        env:
+          image: ${{ fromJson(steps.info.outputs.image) }}
+          architectures: ${{ steps.info.outputs.architectures }}
         run: |
-          if [[ "${{ steps.info.outputs.image }}" == "null" ]]; then
+          if [[ "$image" == "null" ]]; then
             echo "Image property is not defined, skipping build"
             echo "build_arch=false" >> "$GITHUB_OUTPUT"
-          elif [[ "${{ steps.info.outputs.architectures }}" =~ ${{ matrix.arch }} ]]; then
+          elif [[ "$architectures" =~ ${{ matrix.arch }} ]]; then
             echo "build_arch=true" >> "$GITHUB_OUTPUT"
-            echo "image_name=$(echo ${{ steps.info.outputs.image }} | cut -d'/' -f3)" >> "$GITHUB_OUTPUT"
-            echo "image_registry_prefix=$(echo ${{ steps.info.outputs.image }} | cut -d'/' -f1,2)" >> "$GITHUB_OUTPUT"
+            echo "image_name=$(echo "$image" | cut -d'/' -f3)" >> "$GITHUB_OUTPUT"
+            echo "image_registry_prefix=$(echo $image | cut -d'/' -f1,2)" >> "$GITHUB_OUTPUT"
             if [[ -z "${{ github.head_ref }}" ]] && [[ "${{ github.event_name }}" == "push" ]]; then
                 echo "push_image=true" >> "$GITHUB_OUTPUT"
             fi
