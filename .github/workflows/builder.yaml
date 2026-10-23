@@ -108,31 +108,12 @@ jobs:
       - name: Check for build stages
         id: docker
         run: |
-          builder=$(awk '$1 == "FROM" && $3 == "AS" { print $4; exit }' < "$dockerfile")
+          builder=$(awk '$1 == "FROM" && $3 == "AS" { last_builder=$4 } END { print last_builder }' < "$dockerfile" | )
           if [ "$builder" != "" ]; then
             echo "builder=$builder" >> "$GITHUB_OUTPUT"
           fi
         env:
           dockerfile: ./${{ matrix.addon }}/Dockerfile
-
-      - name: Caching build step
-        if: ${{ steps.docker.outputs.builder != '' }}
-        uses: home-assistant/builder/actions/build-image@2026.09.0
-        with:
-          build-args: |
-            target=${{ steps.docker.outputs.builder }}
-          arch: ${{ matrix.arch }}
-          push: false
-          load: true
-          version: ${{ steps.info.outputs.version }}
-          image-tags: |
-            latest-build
-          container-registry-password: ${{ secrets.GITHUB_TOKEN }}
-          image: ${{ steps.check.outputs.image }}
-          context: ./${{ matrix.addon }}
-          cache-gha-scope: ${{ matrix.addon }}-builder
-          cache-image-tag: latest-build
-          cosign: false
 
       - name: Build ${{ matrix.addon }} add-on
         if: steps.check.outputs.build_arch == 'true'
