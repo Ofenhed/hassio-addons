@@ -74,7 +74,7 @@ jobs:
                        '.include += [{arch: $arch, os: $os, addon: $addon}]' <<<"$matrix")
             done
           done
-          echo "matrix=$matrix" >>>"$GITHUB_OUTPUT"
+          echo "matrix=$matrix" >>"$GITHUB_OUTPUT"
 
   build:
     needs: init
