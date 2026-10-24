@@ -90,7 +90,7 @@ jobs:
     name: Build ${{ matrix.addon }} add-on for ${{ matrix.arch }}
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.init.output.matrix) }}
+      matrix: ${{ fromJson(needs.init.outputs.matrix) }}
     permissions:
       contents: read
       packages: write
