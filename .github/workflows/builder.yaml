@@ -16,7 +16,7 @@ jobs:
     outputs:
       changed_addons: ${{ steps.changed_addons.outputs.addons }}
       changed: ${{ steps.changed_addons.outputs.changed }}
-      arches: ${{ steps.arches.outputs.arches }}
+      matrix: ${{ steps.matrix.outputs.matrix }}
     steps:
       - name: Check out the repository
         uses: actions/checkout@v5.0.0
@@ -31,10 +31,6 @@ jobs:
       - name: Find add-on directories
         id: addons
         uses: home-assistant/actions/helpers/find-addons@master
-
-      - name: Enumerate arches
-        id: arches
-        run: echo 'arches=["aarch64", "amd64"]' >> "$GITHUB_OUTPUT"
 
       - name: Get changed add-ons
         id: changed_addons
@@ -59,16 +55,35 @@ jobs:
           else
             echo "No add-on had any monitored files changed";
           fi
+
+      - name: Enumerate build matrix
+        id: matrix
+        env:
+          addons: ${{ steps.changed_addons.outputs.addons }}
+          arches: '["amd64", "aarch64"]'
+        run: |
+          matrix='{"include":[]}'
+          for arch in $(jq -r '.[]' <<<"$arches"); do
+            case "${arch}" in
+              amd64)   os="ubuntu-26.04" ;;
+              aarch64) os="ubuntu-26.04-arm" ;;
+            esac
+            for addon_index in $(jq 'range(0; .|length)' <<<"$addons"); do
+              addon=$(jq -r --argjson index "$addon_index" '.[$index]' <<<"$addons")
+              matrix=$(jq -c --arg arch "$arch" --arg os "$os" --arg addon "$addon" \
+                       '.include += [{arch: $arch, os: $os, addon: $addon}]' <<<"$matrix")
+            done
+          done
+          echo "matrix=$matrix" >>>"$GITHUB_OUTPUT"
+
   build:
     needs: init
-    runs-on: ${{ format('ubuntu-latest{0}', fromJson('{"aarch64": "-arm", "amd64": ""}')[matrix.arch]) }}
+    runs-on: ${{ matrix.os }}
     if: needs.init.outputs.changed == 'true'
     name: Build ${{ matrix.addon }} add-on for ${{ matrix.arch }}
     strategy:
       fail-fast: false
-      matrix:
-        addon: ${{ fromJson(needs.init.outputs.changed_addons) }}
-        arch: ${{ fromJson(needs.init.outputs.arches) }}
+      matrix: ${{ fromJson(needs.init.output.matrix) }}
     permissions:
       contents: read
       packages: write
