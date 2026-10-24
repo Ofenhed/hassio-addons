@@ -75,6 +75,12 @@ jobs:
             done
           done
           echo "matrix=$matrix" >>"$GITHUB_OUTPUT"
+          {
+            echo "# Build matrix"
+            echo "```json"
+            jq . <<<"$matrix"
+            echo "```"
+          } >> "$GITHUB_STEP_SUMMARY"
 
   build:
     needs: init
