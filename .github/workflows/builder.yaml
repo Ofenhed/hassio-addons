@@ -17,6 +17,7 @@ jobs:
       changed_addons: ${{ steps.changed_addons.outputs.addons }}
       changed: ${{ steps.changed_addons.outputs.changed }}
       matrix: ${{ steps.matrix.outputs.matrix }}
+      arches: ${{ steps.matrix.outputs.arches }}
     steps:
       - name: Check out the repository
         uses: actions/checkout@v5.0.0
@@ -62,6 +63,7 @@ jobs:
           addons: ${{ steps.changed_addons.outputs.addons }}
           arches: '["amd64", "aarch64"]'
         run: |
+          echo "arches=$arches" >>"$GITHUB_OUTPUT"
           matrix='{"include":[]}'
           for arch in $(jq -r '.[]' <<<"$arches"); do
             case "${arch}" in
