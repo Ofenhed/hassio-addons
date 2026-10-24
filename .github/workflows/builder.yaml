@@ -131,7 +131,7 @@ jobs:
           container-registry-password: ${{ secrets.GITHUB_TOKEN }}
           image: ${{ steps.check.outputs.arched_image }}
           context: ./${{ matrix.addon }}
-          cache-gha-scope: ${{ matrix.arch }}-${{ matrix.addon }}
+          cache-gha-scope: ${{ matrix.addon }}
           cosign: false
 
   manifest:
