@@ -76,10 +76,11 @@ jobs:
           done
           echo "matrix=$matrix" >>"$GITHUB_OUTPUT"
           {
-            echo "# Build matrix"
-            echo "```json"
+            echo '# Build matrix'
+            echo
+            echo '```json'
             jq . <<<"$matrix"
-            echo "```"
+            echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
   build:
