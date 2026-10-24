@@ -34,7 +34,7 @@ jobs:
 
       - name: Enumerate arches
         id: arches
-        run: echo 'arches=["aarch64", "amd64", "armv7"]' >> "$GITHUB_OUTPUT"
+        run: echo 'arches=["aarch64", "amd64"]' >> "$GITHUB_OUTPUT"
 
       - name: Get changed add-ons
         id: changed_addons
@@ -61,7 +61,7 @@ jobs:
           fi
   build:
     needs: init
-    runs-on: ${{ format('ubuntu-latest{0}', fromJson('{"aarch64": "-arm64"}')[matrix.arch]) }}
+    runs-on: ${{ format('ubuntu-latest{0}', fromJson('{"aarch64": "-arm", "amd64": ""}')[matrix.arch]) }}
     if: needs.init.outputs.changed == 'true'
     name: Build ${{ matrix.addon }} add-on for ${{ matrix.arch }}
     strategy:
