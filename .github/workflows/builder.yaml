@@ -61,7 +61,7 @@ jobs:
           fi
   build:
     needs: init
-    runs-on: ubuntu-latest${{ fromJson('{"aarch64": "-arm64"}')[matrix.arch] }}
+    runs-on: ${{ format("ubuntu-latest{0}", fromJson('{"aarch64": "-arm64"}')[matrix.arch]) }}
     if: needs.init.outputs.changed == 'true'
     name: Build ${{ matrix.addon }} add-on for ${{ matrix.arch }}
     strategy:
